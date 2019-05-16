@@ -34,9 +34,9 @@ def remove_duplicate_reads(args):
 	rmdup_bam = args.output_prefix + '.filt.rmdup.bam'
 
 	filt_cmd = ['samtools', 'view', '-bu', '-q', str(args.map_quality), '-F', '256', '-F', '512', '-F', '2048', filt_bam]
-	sortname_cmd = ['samtools', 'sort', '-n', '-m' , str(args.memory)+'G', '-@', str(args.threads), '-']
+	sortname_cmd = ['samtools', 'sort', '-T $(mktemp -d)', '-n', '-m' , str(args.memory)+'G', '-@', str(args.threads), '-']
 	fixmate_cmd = ['samtools', 'fixmate', '-r', '-', '-']
-	sortpos_cmd = ['samtools', 'sort', '-m', str(args.memory)+'G', '-@', str(args.threads), '-o', markdup_bam]
+	sortpos_cmd = ['samtools', 'sort', '-T $(mktemp -d)', '-m', str(args.memory)+'G', '-@', str(args.threads), '-o', markdup_bam]
 	index_cmd = ['samtools', 'index', markdup_bam]
 	rmdup_cmd = ['samtools', 'view', '-@', str(args.threads), '-b', '-f', '3', '-F', '1024', markdup_bam]
 	rmdup_cmd.extend(['chr{}'.format(c) for c in list(map(str, range(1,23))) + ['X','Y']])
