@@ -128,11 +128,11 @@ def qc_metrics(args):
     macs2_cmd = ['macs2', 'callpeak', '-t', tagalign_file, '--outdir', args.output, '-n', args.name, '-p', '.05',
                  '--nomodel', '--keep-dup', 'all', '--shift', '0', '--extsize', '200', '-g', args.genome, '--call-summits']
     if os.path.isfile(args.peak_file):
-        peak_file=args.peak_file
+        peak_file = args.peak_file
     else:
         with open(os.devnull, 'w') as f:
             subprocess.call(macs2_cmd, stderr=f)
-            peak_file=args.output_prefix + '_peaks.narrowPeak'
+            peak_file = args.output_prefix + '_peaks.narrowPeak'
         try:
             os.remove(args.output_prefix + '_peaks.xls')
             os.remove(args.output_prefix + '_summits.bed')
