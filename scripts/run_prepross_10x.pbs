@@ -1,9 +1,9 @@
 #!/bin/bash
-#PBS -q conda
+#PBS -q home
 #PBS -N snATAC_pre_j
-#PBS -l nodes=1:ppn=16
+#PBS -l nodes=1:ppn=8
 #PBS -l walltime=08:00:00
-#PBS -l mem=96gb
+#PBS -l mem=48gb
 #PBS -V
 #PBS -m abe
 #PBS -A epigen-group
@@ -15,7 +15,11 @@ export PATH=/projects/ps-epigen/software/snATAC_josh/:$PATH;
 ############################################################
 # Input
 ############################################################
-# sample=$1 #JYH_xxx, -v 
+# sample=$1 #JYH_xxx, -v
+samplenames=(`cat $samples`)
+sample=${samplenames[${PBS_ARRAYID}]} #index start from 0
+
+
 work_dir="/home/zhc268/scratch/outputs_snATACj"
 output_dir=${work_dir}/${sample} #/oasis/tscc/scratch/zhc268/projects/evans/190320_immune_cell/Josh/${sample}
 genome=mm10
@@ -24,13 +28,13 @@ blacklist="/projects/ps-epigen/GENOME/${genome}/${genome}.blacklist.bed"
 input_bam="/home/zhc268/data/outputs/10xATAC/${sample}/outs/possorted_bam.bam"
 prom="/projects/ps-epigen/GENOME/${genome}/gencode.vM17.protein_coding.gene.prom.2kb.bed"
 log="${output_dir}/preprocess_log.txt"
-threads=16
+threads=8
 npeak_file=$(find /home/zhc268/data/outputs/peaks/${sample}/ -name "*filt*narrow*.gz")
 ### 1 poreprocess
 
 time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
      --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
-     --peak-file $npeak_file
+     --peak-file $npeak_file --skip-convert \
      --promoter-file $prom 1> $log 2>&1
 
 

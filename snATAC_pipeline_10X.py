@@ -14,10 +14,14 @@ import tempfile
 from multiprocessing import Pool
 
 
+CHR_NAMES_DIC = {'mm': ['chr{}'.format(c) for c in list(map(str, range(1, 20))) + ['X', 'Y']],
+                 'hs': ['chr{}'.format(c) for c in list(map(str, range(1, 23))) + ['X', 'Y']], }
+
+
 def convert_10X_bam(args):
     bf = pysam.AlignmentFile(args.input_bam, 'rb')
-    cf = pysam.AlignmentFile(args.output_prefix
-                             + '.compiled.filt.bam', 'wb', template=bf)
+    cf = pysam.AlignmentFile(args.output_prefix +
+                             '.compiled.filt.bam', 'wb', template=bf)
 
     for read in bf:
         try:
@@ -40,16 +44,16 @@ def remove_duplicate_reads(args):
 
     filt_cmd = ['samtools', 'view', '-bu', '-q',
                 str(args.map_quality), '-F', '256', '-F', '512', '-F', '2048', filt_bam]
-    sortname_cmd = ['samtools', 'sort', '-T', tmp_dir, '-n', '-m',
-                    str(args.memory) + 'G', '-@', str(args.threads), '-']
+    sortname_cmd = ['samtools', 'sort', '-T',
+                    tmp_dir, '-n', '-@', str(args.threads), '-']
+
     fixmate_cmd = ['samtools', 'fixmate', '-r', '-', '-']
-    sortpos_cmd = ['samtools', 'sort', '-T', tmp_dir, '-m',
-                   str(args.memory) + 'G', '-@', str(args.threads), '-o', markdup_bam]
+    sortpos_cmd = ['samtools', 'sort', '-T', tmp_dir,
+                   '-@', str(args.threads), '-o', markdup_bam]
     index_cmd = ['samtools', 'index', markdup_bam]
     rmdup_cmd = ['samtools', 'view', '-@',
                  str(args.threads), '-b', '-f', '3', '-F', '1024', markdup_bam]
-    rmdup_cmd.extend(['chr{}'.format(c)
-                      for c in list(map(str, range(1, 23))) + ['X', 'Y']])
+    rmdup_cmd.extend(CHR_NAMES_DIC[args.genome])
 
     with open(os.devnull, 'w') as null:
         filt = subprocess.Popen(filt_cmd, stdout=subprocess.PIPE)
@@ -82,10 +86,10 @@ def qc_metrics(args):
                     continue
                 barcode = read.query_name.split('_')[0]
                 read_chr = read.reference_name
-                read_start = max(1, read.reference_end - args.shift - args.extsize
-                                 - 5 if read.is_reverse else read.reference_start + args.shift + 4)
-                read_end = min(genome_size[read_chr], read.reference_end - args.shift
-                               - 5 if read.is_reverse else read.reference_start + args.shift + args.extsize + 4)
+                read_start = max(1, read.reference_end - args.shift - args.extsize -
+                                 5 if read.is_reverse else read.reference_start + args.shift + 4)
+                read_end = min(genome_size[read_chr], read.reference_end - args.shift -
+                               5 if read.is_reverse else read.reference_start + args.shift + args.extsize + 4)
                 read_qual = read.mapping_quality
                 if read.is_reverse:
                     read_orient = '-'
@@ -99,8 +103,7 @@ def qc_metrics(args):
         raise FileNotFoundError('{} not found!'.format(rmdup_bam))
 
     qc_metrics = {}
-    chr_names = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12',
-                 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX', 'chrY']
+    chr_names = CHR_NAMES_DIC[args.genome]
     if os.path.isfile(md_bam):
         bamfile = pysam.AlignmentFile(md_bam, 'rb')
         for read in bamfile:
@@ -138,7 +141,8 @@ def qc_metrics(args):
             os.remove(args.output_prefix + '_summits.bed')
         except:
             pass
-    blacklist_cmd = subprocess.Popen(['bedtools', 'intersect', '-a', peak_file, '-b', args.blacklist_file, '-v'], stdout=subprocess.PIPE)
+    blacklist_cmd = subprocess.Popen(
+        ['bedtools', 'intersect', '-a', peak_file, '-b', args.blacklist_file, '-v'], stdout=subprocess.PIPE)
     intersect_cmd = subprocess.Popen(
         ['bedtools', 'intersect', '-a', tagalign_file, '-b', '-'], stdin=blacklist_cmd.stdout, stdout=subprocess.PIPE)
     peak_counts = {bc: 0 for bc in qc_metrics.index}
@@ -146,7 +150,8 @@ def qc_metrics(args):
         line = line.decode()
         fields = line.rstrip().split('\t')
         peak_counts[fields[3]] += 1
-    qc_metrics['reads_in_peaks'] = qc_metrics.index.map(peak_counts).fillna(0).astype(int)
+    qc_metrics['reads_in_peaks'] = qc_metrics.index.map(
+        peak_counts).fillna(0).astype(int)
     tss_counts = {bc: 0 for bc in qc_metrics.index}
     tss_used = {bc: [] for bc in qc_metrics.index}
     tss_cmd = subprocess.Popen(['bedtools', 'intersect', '-a', tagalign_file,
@@ -156,7 +161,8 @@ def qc_metrics(args):
         fields = line.rstrip().split('\t')
         tss_counts[fields[3]] += 1
         tss_used[fields[3]].append(fields[9])
-    qc_metrics['reads_in_promoters'] = qc_metrics.index.map(tss_counts).fillna(0).astype(int)
+    qc_metrics['reads_in_promoters'] = qc_metrics.index.map(
+        tss_counts).fillna(0).astype(int)
     qc_metrics['tss_used'] = [len(set(tss_used[bc]))
                               for bc in qc_metrics.index]
     total_prom = len(open(args.promoter_file).read().splitlines())
@@ -178,8 +184,8 @@ def generate_matrix(args):
     tagalign_file = args.output_prefix + '.filt.rmdup.tagAlign.gz'
     qc_metrics = pd.read_table(
         args.output_prefix + '.qc_metrics.txt', sep='\t', header=0, index_col=0)
-    pass_barcodes = qc_metrics.loc[qc_metrics['unique_usable_reads']
-                                   >= args.minimum_reads].index
+    pass_barcodes = qc_metrics.loc[qc_metrics['unique_usable_reads'] >=
+                                   args.minimum_reads].index
 
     lf_mtx_file = args.output_prefix + '.long_fmt_mtx.txt.gz'
     barcodes_file = args.output_prefix + '.barcodes'
@@ -190,8 +196,8 @@ def generate_matrix(args):
     window_intersect = intersect_regions(tagalign_file, windows_file)
     cut = subprocess.Popen(
         ['cut', '-f', '4,10'], stdin=window_intersect.stdout, stdout=subprocess.PIPE)
-    sort = subprocess.Popen(['sort', '-S', '{}G'.format(args.memory *
-                                                        args.threads)], stdin=cut.stdout, stdout=subprocess.PIPE)
+    sort = subprocess.Popen(['sort', '-S', '{}G'.format(args.memory
+                                                        * args.threads)], stdin=cut.stdout, stdout=subprocess.PIPE)
     uniq = subprocess.Popen(
         ['uniq', '-c'], stdin=sort.stdout, stdout=subprocess.PIPE)
     awk = subprocess.Popen(
@@ -298,7 +304,7 @@ def process_args():
     matrix_group.add_argument(
         '--extsize', required=False, type=int, default=200, help='Read extension size')
     matrix_group.add_argument('--minimum-reads', required=False, type=int,
-                              default=500, help='Minimum number of reads for barcode inclusion')
+                              default=100, help='Minimum number of reads for barcode inclusion')
     matrix_group.add_argument('--minimum-frip', required=False, type=float,
                               default=0.4, help='Minimum frip for barcode inclusion')
     matrix_group.add_argument('--window-size', required=False, type=int,
