@@ -12,7 +12,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 sample <-  args[1]; # "PDL1"
 lower.th <- ifelse(length(args)>1,as.numeric(args[2]),2) ## default 2
-
+th.prob <- ifelse(length(args)>2,as.numeric(args[3]),.05) ## default 2
 
 qc <- fread(paste0(sample,'/',sample, ".qc_metrics.txt")) %>% mutate(log10_uniq_usable_reads = log10(unique_usable_reads +
     1))
@@ -29,7 +29,7 @@ plot_mix_comps <- function(x, mu, sigma, lam) {
     lam * dnorm(x, mu, sigma)
 }
 
-threshold = qnorm(0.05, mixmdl$mu[2], mixmdl$sigma[2])
+threshold = qnorm(th.prob, mixmdl$mu[2], mixmdl$sigma[2])
 
 tot_cells <- sum(qc$log10_uniq_usable_reads > lower.th)
 final_cells <- sum(qc$log10_uniq_usable_reads > threshold)
@@ -43,7 +43,7 @@ p3 <- ggplot(qc %>% filter(log10_uniq_usable_reads > lower.th)) + geom_histogram
     "green")) + geom_vline(xintercept = threshold, color = "green", linetype = 2) +
     annotate("text", 0, 0.75, size = 3, hjust = 0, label = paste0("total barcodes(>",round(10^lower.th-1),"):",
         "\n",tot_cells, "\n", "G1.median=", round(10^mixmdl$mu[1]-1), "\n", "G2.median=",
-        round(10^mixmdl$mu[2]-1), "\n", "threshold=", round(10^threshold-1), "\n", "(",
+        round(10^mixmdl$mu[2]-1), "\n", "threshold=", round(10^threshold-1),",prob=",round(th.prob,2), "\n", "(",
         final_cells, " cells,", round(final_cells/tot_cells * 100), "%)"))
 
 pdf(paste0(sample,"_cell_threshold.pdf"))
