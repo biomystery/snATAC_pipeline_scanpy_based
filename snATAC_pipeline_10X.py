@@ -20,8 +20,8 @@ CHR_NAMES_DIC = {'mm': ['chr{}'.format(c) for c in list(map(str, range(1, 20))) 
 
 def convert_10X_bam(args):
     bf = pysam.AlignmentFile(args.input_bam, 'rb')
-    cf = pysam.AlignmentFile(args.output_prefix +
-                             '.compiled.filt.bam', 'wb', template=bf)
+    cf = pysam.AlignmentFile(args.output_prefix
+                             + '.compiled.filt.bam', 'wb', template=bf)
 
     for read in bf:
         try:
@@ -59,6 +59,7 @@ def remove_duplicate_reads(args):
         filt = subprocess.Popen(filt_cmd, stdout=subprocess.PIPE)
         sortname = subprocess.Popen(
             sortname_cmd, stdin=filt.stdout, stdout=subprocess.PIPE)
+
         fixmate = subprocess.Popen(
             fixmate_cmd, stdin=sortname.stdout, stdout=subprocess.PIPE)
         subprocess.call(sortpos_cmd, stdin=fixmate.stdout)
@@ -86,10 +87,10 @@ def qc_metrics(args):
                     continue
                 barcode = read.query_name.split('_')[0]
                 read_chr = read.reference_name
-                read_start = max(1, read.reference_end - args.shift - args.extsize -
-                                 5 if read.is_reverse else read.reference_start + args.shift + 4)
-                read_end = min(genome_size[read_chr], read.reference_end - args.shift -
-                               5 if read.is_reverse else read.reference_start + args.shift + args.extsize + 4)
+                read_start = max(1, read.reference_end - args.shift - args.extsize
+                                 - 5 if read.is_reverse else read.reference_start + args.shift + 4)
+                read_end = min(genome_size[read_chr], read.reference_end - args.shift
+                               - 5 if read.is_reverse else read.reference_start + args.shift + args.extsize + 4)
                 read_qual = read.mapping_quality
                 if read.is_reverse:
                     read_orient = '-'
@@ -128,14 +129,20 @@ def qc_metrics(args):
         raise FileNotFoundError('{} not found!'.format(md_bam))
     qc_metrics = pd.DataFrame.from_dict(
         qc_metrics, orient='index').fillna(0).astype(int)
-    macs2_cmd = ['macs2', 'callpeak', '-t', tagalign_file, '--outdir', args.output, '-n', args.name, '-p', '.05',
-                 '--nomodel', '--keep-dup', 'all', '--shift', '0', '--extsize', '200', '-g', args.genome, '--call-summits']
+    peak_file = args.output_prefix + '_peaks.narrowPeak'
     if os.path.isfile(args.peak_file):
-        peak_file = args.peak_file
+        zcat_proc = subprocess.Popen(
+                ['zcat', args.peak_file], stdout=subprocess.PIPE)
+        sortBed_proc = subprocess.Popen(
+                ['sort', '-k1,1', '-k2,2n'], stdin=zcat_proc.stdout, stdout=subprocess.PIPE)
+        with open(peak_file, 'w') as f:            
+            mergeBed_proc = subprocess.call(
+                ['mergeBed', '-i', '-'], stdin=sortBed_proc.stdout, stdout=f)
     else:
+        macs2_cmd = ['macs2', 'callpeak', '-t', tagalign_file, '--outdir', args.output, '-n', args.name, '-p', '.05',
+                     '--nomodel', '--keep-dup', 'all', '--shift', '0', '--extsize', '200', '-g', args.genome, ]
         with open(os.devnull, 'w') as f:
             subprocess.call(macs2_cmd, stderr=f)
-            peak_file = args.output_prefix + '_peaks.narrowPeak'
         try:
             os.remove(args.output_prefix + '_peaks.xls')
             os.remove(args.output_prefix + '_summits.bed')
@@ -184,8 +191,8 @@ def generate_matrix(args):
     tagalign_file = args.output_prefix + '.filt.rmdup.tagAlign.gz'
     qc_metrics = pd.read_table(
         args.output_prefix + '.qc_metrics.txt', sep='\t', header=0, index_col=0)
-    pass_barcodes = qc_metrics.loc[qc_metrics['unique_usable_reads'] >=
-                                   args.minimum_reads].index
+    pass_barcodes = qc_metrics.loc[qc_metrics['unique_usable_reads']
+                                   >= args.minimum_reads].index
 
     lf_mtx_file = args.output_prefix + '.long_fmt_mtx.txt.gz'
     barcodes_file = args.output_prefix + '.barcodes'
@@ -206,7 +213,7 @@ def generate_matrix(args):
         subprocess.call(['gzip', '-c'], stdin=awk.stdout, stdout=f)
 
     lf_mtx = pd.read_table(lf_mtx_file, sep='\t', header=None, names=[
-                           'barcode', 'region', 'count'])
+        'barcode', 'region', 'count'])
     lf_mtx = lf_mtx.loc[lf_mtx['barcode'].isin(pass_barcodes)]
     lf_mtx.to_csv(lf_mtx_file, sep='\t', header=False,
                   index=False, compression='gzip')
