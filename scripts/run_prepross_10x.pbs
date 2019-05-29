@@ -37,3 +37,7 @@ time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -
      --promoter-file $prom 1> $log 2>&1
 
 
+############################################################
+# transfer 
+############################################################
+rsync -avz $output_dir  /home/zhc268/data/outputs/snATACj/
