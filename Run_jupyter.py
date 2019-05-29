@@ -5,6 +5,7 @@
 
 import papermill as pm
 import sys
+import subprocess
 
 sample_name = sys.argv[1]
 threshold = sys.argv[2]
@@ -17,5 +18,5 @@ pm.execute_notebook(
                 }
 )
 
-
+subprocess.call(["jupyter-nbconvert", "--to", "html",'{0}/{0}.ipynb'.format(sample_name)])
 # In[ ]:
