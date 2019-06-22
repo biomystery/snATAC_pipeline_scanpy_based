@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -q home
+#PBS -q hotel
 #PBS -N snATAC_pre_j
 #PBS -l nodes=1:ppn=16
-#PBS -l walltime=08:00:00
+#PBS -l walltime=16:00:00
 #PBS -V
 #PBS -m abe
 #PBS -A epigen-group
@@ -30,14 +30,14 @@ log="${output_dir}/preprocess_log.txt"
 threads=$PBS_NP
 npeak_file=$(find /home/zhc268/data/outputs/peaks/${sample}/ -name "*filt*narrow*.gz")
 ### 1 poreprocess
-
-time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
+# --skip-convert
+time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift 0 --extsize 0 \
      --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
-     --peak-file $npeak_file --skip-convert -m 1 \
+     --peak-file $npeak_file  -m 1 \ 
      --promoter-file $prom 1> $log 2>&1
 
 
 ############################################################
 # transfer 
 ############################################################
-rsync -avz $output_dir  /home/zhc268/data/outputs/snATACj/
+rsync -avz $output_dir --exclude '*md.bam*' --exclude "*compiled.filt.bam" /home/zhc268/data/outputs/snATACj/

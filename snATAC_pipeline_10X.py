@@ -39,7 +39,7 @@ def convert_10X_bam(args):
 def remove_duplicate_reads(args):
     filt_bam = args.output_prefix + '.compiled.filt.bam'
     markdup_bam = args.output_prefix + '.filt.md.bam'
-    rmdup_bam = args.output_prefix + '.filt.rmdup.bam'
+    rmdup_bam = args.output_prefix + '.filt.nodup.bam'
     tmp_dir = tempfile.mkdtemp()
 
     filt_cmd = ['samtools', 'view', '-bu', '-q',
@@ -74,8 +74,8 @@ def remove_duplicate_reads(args):
 
 def qc_metrics(args):
     md_bam = args.output_prefix + '.filt.md.bam'
-    rmdup_bam = args.output_prefix + '.filt.rmdup.bam'
-    tagalign_file = args.output_prefix + '.filt.rmdup.tagAlign.gz'
+    rmdup_bam = args.output_prefix + '.filt.nodup.bam'
+    tagalign_file = args.output_prefix + '.filt.nodup.tn5.tagAlign.gz'
 
     if os.path.isfile(rmdup_bam):
         with gzip.open(tagalign_file, 'wt') as f:
@@ -105,6 +105,8 @@ def qc_metrics(args):
 
     qc_metrics = {}
     chr_names = CHR_NAMES_DIC[args.genome]
+
+    # counting reads ~ N
     if os.path.isfile(md_bam):
         bamfile = pysam.AlignmentFile(md_bam, 'rb')
         for read in bamfile:
@@ -129,13 +131,15 @@ def qc_metrics(args):
         raise FileNotFoundError('{} not found!'.format(md_bam))
     qc_metrics = pd.DataFrame.from_dict(
         qc_metrics, orient='index').fillna(0).astype(int)
+
+    # peak related QCs ~ N
     peak_file = args.output_prefix + '_peaks.narrowPeak'
     if os.path.isfile(args.peak_file):
         zcat_proc = subprocess.Popen(
-                ['zcat', args.peak_file], stdout=subprocess.PIPE)
+            ['zcat', args.peak_file], stdout=subprocess.PIPE)
         sortBed_proc = subprocess.Popen(
-                ['sort', '-k1,1', '-k2,2n'], stdin=zcat_proc.stdout, stdout=subprocess.PIPE)
-        with open(peak_file, 'w') as f:            
+            ['sort', '-k1,1', '-k2,2n'], stdin=zcat_proc.stdout, stdout=subprocess.PIPE)
+        with open(peak_file, 'w') as f:
             mergeBed_proc = subprocess.call(
                 ['mergeBed', '-i', '-'], stdin=sortBed_proc.stdout, stdout=f)
     else:
@@ -159,6 +163,8 @@ def qc_metrics(args):
         peak_counts[fields[3]] += 1
     qc_metrics['reads_in_peaks'] = qc_metrics.index.map(
         peak_counts).fillna(0).astype(int)
+
+    # TSS related QCs ~ N
     tss_counts = {bc: 0 for bc in qc_metrics.index}
     tss_used = {bc: [] for bc in qc_metrics.index}
     tss_cmd = subprocess.Popen(['bedtools', 'intersect', '-a', tagalign_file,
@@ -172,6 +178,8 @@ def qc_metrics(args):
         tss_counts).fillna(0).astype(int)
     qc_metrics['tss_used'] = [len(set(tss_used[bc]))
                               for bc in qc_metrics.index]
+
+    # fraction calculation
     total_prom = len(open(args.promoter_file).read().splitlines())
     qc_metrics['frac_reads_in_peaks'] = qc_metrics['reads_in_peaks'].div(
         qc_metrics['unique_usable_reads']).replace(np.inf, 0).fillna(0)
@@ -182,13 +190,15 @@ def qc_metrics(args):
         qc_metrics['unique_usable_reads'] + qc_metrics['unique_mito_reads']).replace(np.inf, 0).fillna(0)
     qc_metrics['frac_duplicated_reads'] = qc_metrics['duplicated_reads'].div(
         qc_metrics['total_sequenced_reads']).fillna(0)
+
+    # save to file
     qc_metrics.to_csv(os.path.join(
         args.output_prefix + '.qc_metrics.txt'), sep='\t')
     return
 
 
 def generate_matrix(args):
-    tagalign_file = args.output_prefix + '.filt.rmdup.tagAlign.gz'
+    tagalign_file = args.output_prefix + '.filt.nodup.tn5.tagAlign.gz'
     qc_metrics = pd.read_table(
         args.output_prefix + '.qc_metrics.txt', sep='\t', header=0, index_col=0)
     pass_barcodes = qc_metrics.loc[qc_metrics['unique_usable_reads']
