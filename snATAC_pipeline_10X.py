@@ -87,10 +87,8 @@ def qc_metrics(args):
                     continue
                 barcode = read.query_name.split('_')[0]
                 read_chr = read.reference_name
-                read_start = max(1, read.reference_end - args.shift - args.extsize
-                                 - 5 if read.is_reverse else read.reference_start + args.shift + 4)
-                read_end = min(genome_size[read_chr], read.reference_end - args.shift
-                               - 5 if read.is_reverse else read.reference_start + args.shift + args.extsize + 4)
+                read_start = read.reference_start if read.is_reverse else read.reference_start + 4
+                read_end = read.reference_end - 5 if read.is_reverse else read.reference_end
                 read_qual = read.mapping_quality
                 if read.is_reverse:
                     read_orient = '-'
@@ -144,7 +142,7 @@ def qc_metrics(args):
                 ['mergeBed', '-i', '-'], stdin=sortBed_proc.stdout, stdout=f)
     else:
         macs2_cmd = ['macs2', 'callpeak', '-t', tagalign_file, '--outdir', args.output, '-n', args.name, '-p', '.05',
-                     '--nomodel', '--keep-dup', 'all', '--shift', '0', '--extsize', '200', '-g', args.genome, ]
+                     '--nomodel', '--keep-dup', 'all', '--shift', str(args.shift), '--extsize', str(args.extsize), '-g', args.genome, ]
         with open(os.devnull, 'w') as f:
             subprocess.call(macs2_cmd, stderr=f)
         try:
