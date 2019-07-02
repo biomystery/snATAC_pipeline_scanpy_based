@@ -21,6 +21,7 @@ sample=${samplenames[${PBS_ARRAYID}]} #index start from 0
 
 work_dir="/home/zhc268/scratch/outputs_snATACj"
 output_dir=${work_dir}/${sample} #/oasis/tscc/scratch/zhc268/projects/evans/190320_immune_cell/Josh/${sample}
+mkdir -p $output_dir
 genome=mm10
 chromsize="/projects/ps-epigen/GENOME/${genome}/${genome}.chrom.sizes"
 blacklist="/projects/ps-epigen/GENOME/${genome}/${genome}.blacklist.bed"
@@ -31,9 +32,14 @@ threads=$PBS_NP
 npeak_file=$(find /home/zhc268/data/outputs/peaks/${sample}/ -name "*filt*narrow*.gz")
 ### 1 poreprocess
 # --skip-convert
-time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift 0 --extsize 0 \
+echo -e "time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
      --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
-     --peak-file $npeak_file  -m 1 \ 
+     --peak-file $npeak_file  -m 1 \
+     --promoter-file $prom 1> $log 2>&1"
+
+time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
+     --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
+     --peak-file $npeak_file  -m 1 \
      --promoter-file $prom 1> $log 2>&1
 
 

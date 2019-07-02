@@ -1,0 +1,16 @@
+time snATAC_pipeline_10X.py -o /home/zhc268/scratch/outputs_snATACj/JYH_1048  -b /home/zhc268/data/outputs/10xATAC/JYH_1048/outs/possorted_bam.bam -n JYH_1048 --shift -75 --extsize 150      --chrom-sizes /projects/ps-epigen/GENOME/mm10/mm10.chrom.sizes --blacklist-file /projects/ps-epigen/GENOME/mm10/mm10.blacklist.bed -t 16      --peak-file /home/zhc268/data/outputs/peaks/JYH_1048/JYH_1048_R1.trim.PE2SE.nodup.tn5.pf.filt.narrowPeak.gz  -m 1      --promoter-file /projects/ps-epigen/GENOME/mm10/gencode.vM17.protein_coding.gene.prom.2kb.bed 1> /home/zhc268/scratch/outputs_snATACj/JYH_1048/preprocess_log.txt 2>&1
+sending incremental file list
+JYH_1048/
+JYH_1048/JYH_1048.barcodes
+JYH_1048/JYH_1048.filt.nodup.bam
+JYH_1048/JYH_1048.filt.nodup.tn5.tagAlign.gz
+JYH_1048/JYH_1048.long_fmt_mtx.txt.gz
+JYH_1048/JYH_1048.mtx
+JYH_1048/JYH_1048.qc_metrics.txt
+JYH_1048/JYH_1048.regions
+JYH_1048/JYH_1048_peaks.narrowPeak
+JYH_1048/preprocess_log.txt
+
+sent 2232344853 bytes  received 187 bytes  17372334.94 bytes/sec
+total size is 2388165066  speedup is 1.07
+Nodes:        tscc-0-57

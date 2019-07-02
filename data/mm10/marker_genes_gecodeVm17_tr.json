@@ -17,8 +17,12 @@
         "Cebpe",
         "Csf3r",
         "Lcn2",
-        "Ltf"
+        "Ltf",
+        "S100a8",
+        "S100a9"
     ],
+    "Epithelial Cell":["Krt19.1"],
+    "Fib":["Col1a2","Col1a2.1","Col1a2.2","Col1a2.3","Col1a2.4","Acta2"],
     "DCs": [
         "Cd209a",
         "Cd74",
@@ -56,7 +60,9 @@
         "Adgre1",
         "Mrc1",
         "Eif4a1",
-        "RP23-144N15.4"
+        "RP23-144N15.4",
+        "Cx3cr1",
+        "Thbs1"
     ],
     "CD4_Tcell": [
         "Cd4.1",
