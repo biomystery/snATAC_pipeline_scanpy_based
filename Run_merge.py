@@ -30,6 +30,7 @@ def main():
         output_file,
         parameters={"samples": sample_ids,
                     "sample_names": sample_names,
+                    "output_dir": output_dir,
                     }
     )
 
