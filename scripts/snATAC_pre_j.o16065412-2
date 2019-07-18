@@ -1,0 +1,35 @@
+time snATAC_pipeline_10X.py -o /home/zhc268/scratch/outputs_snATACj/JYH_856_1_2  -b /home/zhc268/data/outputs/10xATAC/JYH_856_1_2/outs/possorted_bam.bam -n JYH_856_1_2 --shift -75 --extsize 150      --chrom-sizes /projects/ps-epigen/GENOME/mm10/mm10.chrom.sizes --blacklist-file /projects/ps-epigen/GENOME/mm10/mm10.blacklist.bed -t 16      --peak-file /home/zhc268/data/outputs/peaks/JYH_856_1_2/JYH_856_1_2_R1.trim.PE2SE.nodup.tn5.pf.filt.narrowPeak.gz  -m 1      --promoter-file /projects/ps-epigen/GENOME/mm10/gencode.vM17.protein_coding.gene.prom.2kb.bed 1> /home/zhc268/scratch/outputs_snATACj/JYH_856_1_2/preprocess_log.txt 2>&1
+sending incremental file list
+JYH_856_1_2/
+JYH_856_1_2/._JYH_856_1_2.html
+JYH_856_1_2/._JYH_856_1_2_cell_threshold.pdf
+JYH_856_1_2/._JYH_856_1_2_prefilter.html
+JYH_856_1_2/JYH_856_1_2-Step2.ipynb
+JYH_856_1_2/JYH_856_1_2.adata.h5ad
+JYH_856_1_2/JYH_856_1_2.barcodes
+JYH_856_1_2/JYH_856_1_2.doublet_result.txt
+JYH_856_1_2/JYH_856_1_2.doublet_scores.txt
+JYH_856_1_2/JYH_856_1_2.filt.nodup.bam
+JYH_856_1_2/JYH_856_1_2.filt.nodup.tn5.tagAlign.gz
+JYH_856_1_2/JYH_856_1_2.filtered.txt
+JYH_856_1_2/JYH_856_1_2.html
+JYH_856_1_2/JYH_856_1_2.ipynb
+JYH_856_1_2/JYH_856_1_2.long_fmt_mtx.txt.gz
+JYH_856_1_2/JYH_856_1_2.mtx
+JYH_856_1_2/JYH_856_1_2.predicted_doublets.txt
+JYH_856_1_2/JYH_856_1_2.qc_metrics.txt
+JYH_856_1_2/JYH_856_1_2.regions
+JYH_856_1_2/JYH_856_1_2_peaks.narrowPeak
+JYH_856_1_2/JYH_856_1_2_prefilter.html
+JYH_856_1_2/JYH_856_1_2_prefilter.ipynb
+JYH_856_1_2/JYH_856_1_2_scrublet.html
+JYH_856_1_2/JYH_856_1_2_scrublet.ipynb
+JYH_856_1_2/preprocess_log.txt
+JYH_856_1_2/run_cicero.ipynb
+JYH_856_1_2/.ipynb_checkpoints/
+JYH_856_1_2/.ipynb_checkpoints/JYH_856_1_2-Step2-checkpoint.ipynb
+JYH_856_1_2/.ipynb_checkpoints/run_cicero-checkpoint.ipynb
+
+sent 18774311036 bytes  received 533 bytes  18727492.84 bytes/sec
+total size is 36945652813  speedup is 1.97
+Nodes:        tscc-3-45

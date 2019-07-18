@@ -1,0 +1,53 @@
+time snATAC_pipeline_10X.py -o /home/zhc268/scratch/outputs_snATACj/JYH_857_1_2  -b /home/zhc268/data/outputs/10xATAC/JYH_857_1_2/outs/possorted_bam.bam -n JYH_857_1_2 --shift -75 --extsize 150      --chrom-sizes /projects/ps-epigen/GENOME/mm10/mm10.chrom.sizes --blacklist-file /projects/ps-epigen/GENOME/mm10/mm10.blacklist.bed -t 16      --peak-file /home/zhc268/data/outputs/peaks/JYH_857_1_2/JYH_857_1_2_R1.trim.PE2SE.nodup.tn5.pf.filt.narrowPeak.gz  -m 1      --promoter-file /projects/ps-epigen/GENOME/mm10/gencode.vM17.protein_coding.gene.prom.2kb.bed 1> /home/zhc268/scratch/outputs_snATACj/JYH_857_1_2/preprocess_log.txt 2>&1
+sending incremental file list
+JYH_857_1_2/
+JYH_857_1_2/._JYH_854_1_2.html
+JYH_857_1_2/._JYH_857_1_2_TSSe-Copy1.html
+JYH_857_1_2/._JYH_857_1_2_cell_threshold.pdf
+JYH_857_1_2/._JYH_857_1_2_prefilter.html
+JYH_857_1_2/JYH_857_1_2-Step2.ipynb
+JYH_857_1_2/JYH_857_1_2.adata.h5ad
+JYH_857_1_2/JYH_857_1_2.barcodes
+JYH_857_1_2/JYH_857_1_2.doublet_result.txt
+JYH_857_1_2/JYH_857_1_2.doublet_scores.txt
+JYH_857_1_2/JYH_857_1_2.filt.nodup.bam
+JYH_857_1_2/JYH_857_1_2.filt.nodup.tn5.tagAlign.gz
+JYH_857_1_2/JYH_857_1_2.filtered.txt
+JYH_857_1_2/JYH_857_1_2.html
+JYH_857_1_2/JYH_857_1_2.ipynb
+JYH_857_1_2/JYH_857_1_2.long_fmt_mtx.txt.gz
+JYH_857_1_2/JYH_857_1_2.mtx
+JYH_857_1_2/JYH_857_1_2.predicted_doublets.txt
+JYH_857_1_2/JYH_857_1_2.qc_metrics.txt
+JYH_857_1_2/JYH_857_1_2.regions
+JYH_857_1_2/JYH_857_1_2_TSSe-Copy1.html
+JYH_857_1_2/JYH_857_1_2_TSSe-Copy1.ipynb
+JYH_857_1_2/JYH_857_1_2_TSSe.Rds
+JYH_857_1_2/JYH_857_1_2_doublet_scores.csv
+JYH_857_1_2/JYH_857_1_2_peaks.narrowPeak
+JYH_857_1_2/JYH_857_1_2_predicted_doublet.csv
+JYH_857_1_2/JYH_857_1_2_prefilter.html
+JYH_857_1_2/JYH_857_1_2_prefilter.ipynb
+JYH_857_1_2/JYH_857_1_2_prefiltering.ipynb
+JYH_857_1_2/JYH_857_1_2_scrublet.html
+JYH_857_1_2/JYH_857_1_2_scrublet.ipynb
+JYH_857_1_2/JYH_857_1_2_tss.Rds
+JYH_857_1_2/pbmc8k_filtered_gene_bc_matrices.tar.gz
+JYH_857_1_2/preprocess_log.txt
+JYH_857_1_2/.ipynb_checkpoints/
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2-Step2-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2_TSSe-Copy1-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2_TSSe-Copy2-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2_prefiltering-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2_scrublet-Copy1-checkpoint.ipynb
+JYH_857_1_2/.ipynb_checkpoints/JYH_857_1_2_scrublet-checkpoint.ipynb
+JYH_857_1_2/filtered_gene_bc_matrices/
+JYH_857_1_2/filtered_gene_bc_matrices/GRCh38/
+JYH_857_1_2/filtered_gene_bc_matrices/GRCh38/barcodes.tsv
+JYH_857_1_2/filtered_gene_bc_matrices/GRCh38/genes.tsv
+JYH_857_1_2/filtered_gene_bc_matrices/GRCh38/matrix.mtx
+
+sent 20163551977 bytes  received 845 bytes  18765521.47 bytes/sec
+total size is 39881087686  speedup is 1.98
+Nodes:        tscc-3-34
