@@ -1,8 +1,0 @@
-time snATAC_pipeline_10X.py -o /home/zhc268/scratch/outputs_snATACj/JYH_877_1_2  -b /home/zhc268/data/outputs/10xATAC/JYH_877_1_2/outs/possorted_bam.bam -n JYH_877_1_2 --shift -75 --extsize 150      --chrom-sizes /projects/ps-epigen/GENOME/mm10/mm10.chrom.sizes --blacklist-file /projects/ps-epigen/GENOME/mm10/mm10.blacklist.bed -t 16      --peak-file   -m 1      --promoter-file /projects/ps-epigen/GENOME/mm10/gencode.vM17.protein_coding.gene.prom.2kb.bed 1> /home/zhc268/scratch/outputs_snATACj/JYH_877_1_2/preprocess_log.txt 2>&1
-sending incremental file list
-JYH_877_1_2/
-JYH_877_1_2/preprocess_log.txt
-
-sent 474 bytes  received 35 bytes  1018.00 bytes/sec
-total size is 596  speedup is 1.17
-Nodes:        tscc-1-3
