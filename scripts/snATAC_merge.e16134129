@@ -1,0 +1,64 @@
+  0%|                                                                                                                                                                                                                | 0/21 [00:00<?, ?it/s]  5%|█████████▌                                                                                                                                                                                              | 1/21 [00:10<03:34, 10.72s/it] 14%|████████████████████████████▌                                                                                                                                                                           | 3/21 [00:10<02:15,  7.52s/it] 24%|███████████████████████████████████████████████▌                                                                                                                                                        | 5/21 [03:46<10:02, 37.64s/it] 29%|█████████████████████████████████████████████████████████▏                                                                                                                                              | 6/21 [04:32<10:02, 40.15s/it] 33%|██████████████████████████████████████████████████████████████████▋                                                                                                                                     | 7/21 [04:59<08:25, 36.10s/it] 38%|████████████████████████████████████████████████████████████████████████████▏                                                                                                                           | 8/21 [07:37<15:45, 72.73s/it] 43%|████████████████████████████████████████████████████████████████████████████████████▍                                                                                                                | 9/21 [31:08<1:34:49, 474.09s/it] 48%|█████████████████████████████████████████████████████████████████████████████████████████████▎                                                                                                      | 10/21 [31:38<1:02:30, 340.98s/it] 52%|██████████████████████████████████████████████████████████████████████████████████████████████████████▋                                                                                             | 11/21 [38:58<1:01:47, 370.71s/it] 57%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                                                                  | 12/21 [2:22:41<5:18:57, 2126.35s/it]
+Traceback (most recent call last):
+  File "Run_merge.py", line 59, in <module>
+    main()
+  File "Run_merge.py", line 50, in main
+    "output_dir": output_dir,
+  File "/projects/ps-epigen/software/miniconda3/envs/scanpy/lib/python3.6/site-packages/papermill/execute.py", line 97, in execute_notebook
+    raise_for_execution_errors(nb, output_path)
+  File "/projects/ps-epigen/software/miniconda3/envs/scanpy/lib/python3.6/site-packages/papermill/execute.py", line 181, in raise_for_execution_errors
+    raise error
+papermill.exceptions.PapermillExecutionError: 
+---------------------------------------------------------------------------
+Exception encountered at "In [11]":
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+/projects/ps-epigen/software/miniconda3/envs/scanpy/lib/python3.6/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
+   2655             try:
+-> 2656                 return self._engine.get_loc(key)
+   2657             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'cluster_1.6500000000000001'
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-11-962f3d9998c5> in <module>
+      8     print(adata_norm.obs['cluster_'+str(res)].value_counts()[[-1]])
+      9     if adata_norm.obs['cluster_'+str(res)].value_counts().min()<200:
+---> 10         adata_norm.obs['leiden']=adata_norm.obs['cluster_'+str(res-0.05)]
+     11         break
+     12     adata_norm.obs['leiden']=adata_norm.obs['cluster_'+str(res)]
+
+/projects/ps-epigen/software/miniconda3/envs/scanpy/lib/python3.6/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2925             if self.columns.nlevels > 1:
+   2926                 return self._getitem_multilevel(key)
+-> 2927             indexer = self.columns.get_loc(key)
+   2928             if is_integer(indexer):
+   2929                 indexer = [indexer]
+
+/projects/ps-epigen/software/miniconda3/envs/scanpy/lib/python3.6/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
+   2656                 return self._engine.get_loc(key)
+   2657             except KeyError:
+-> 2658                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   2659         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+   2660         if indexer.ndim > 1 or indexer.size > 1:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'cluster_1.6500000000000001'
+
