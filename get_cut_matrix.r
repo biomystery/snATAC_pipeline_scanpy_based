@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
 suppressMessages(require(optparse))
-
 ############################################################
 ## input
 ############################################################
@@ -27,36 +26,66 @@ for (f in c(region.file,tag.file,output.dir))
 if(!grepl('[.]bed$',basename(region.file))) stop(sprintf("%s  is not .bed", region.file))
 
 ############################################################
+## functions
+############################################################
+
+do.skip.step <- function(input_files, output_files) {
+    isInputExists <- all(sapply(input_files, file.exists))
+    isOuputExists <- all(sapply(output_files, file.exists))
+    isInputNewer <- any(sapply(input_files, function(i) any(sapply(output_files, function(o) file.mtime(i) >file.mtime(o)))))
+
+    if (!isInputExists)
+        stop(paste("One or more of ", paste(input_files, collapse = ","), " does not exist"))
+    if (!isOuputExists)
+        return(T)
+    else if(isInputNewer){ return(T)
+    }else{
+        return(T)
+    }
+}
+
+############################################################
 ## main
 ############################################################
-suppressMessages(require(tidyverse))
-suppressMessages(require(data.table))
-suppressMessages(require(rtracklayer))
-suppressMessages(require(Matrix))
-
+## input/output
 prefix<-sub('.bed$','',basename(region.file))
 output.uniq.region <- file.path(output.dir,paste0(prefix,'.uniq.bed'))
 output.intersect.res <- file.path(output.dir,paste0(prefix,'.intersect.tsv'))
 output.feature.sp <-file.path(output.dir,paste0(prefix,'.intersect.mtx'))
 
 ## make unqiue regions/features
-regions <- fread(region.file)%>%mutate(V4=make.names(V4,unique = T))
-fwrite(regions,output.uniq.region,sep = '\t',col.names = F)
+
+if(!do.skip.step(input_files=region.file,output_files=output.uniq.region)){
+    suppressMessages(require(data.table))
+    suppressMessages(require(tidyverse))
+    sprintf("Making features uniq")
+    regions <- fread(region.file)%>%mutate(V4=make.names(V4,unique = T))
+    fwrite(regions,output.uniq.region,sep = '\t',col.names = F)
+}else{sprintf("Skipped making features uniq")}
+
 
 
 ## intersect features with tags/cuts: |feature_name|cell|dist_to_edge|
-cmd = paste0("zcat ", tag.file, "| awk -v OFS='\t' '{if($6==\"+\") print $1,$2,$2+1,$4; else print $1,$3-1,$3,$4}'")
-cmd = paste0(cmd, "|intersectBed -a ", output.uniq.region, " -b - -wa -wb |awk '{{print $4,$10,$8-$2}}'>",
+ if(!do.skip.step(input_files=c(output.uniq.region,tag.file),
+                  output_files=output.intersect.res)){
+     sprintf('bedIntersecting...')
+     cmd = paste0("zcat ", tag.file, "| awk -v OFS='\t' '{if($6==\"+\") print $1,$2,$2+1,$4; else print $1,$3-1,$3,$4}'")
+     cmd = paste0(cmd, "|intersectBed -a ", output.uniq.region, " -b - -wa -wb |awk '{{print $4,$10,$8-$2}}'>",
              output.intersect.res)
-print(cmd)
-system.time(system(cmd))
+    print(cmd)
+     system.time(system(cmd))}else{sprintf("Skipped bedIntersecting")}
 
-res.intersect <- fread(output.intersect.res,drop=3,col.names = c('feature.name','tag.name'),stringsAsFactors = T)
-res.intersect<-res.intersect[,.N,by=.(feature.name,tag.name)]
-
-
-## save to parse matrix (row-cells,colun - features)
-m <- with(res.intersect, sparseMatrix(i = as.numeric(tag.name), j = as.numeric(feature.name),
+if(!do.skip.step(input_files=output.intersect.res,output_files=output.feature.sp)){
+    sprintf('convert to sparse count matrix')
+    suppressMessages(require(data.table))
+    suppressMessages(require(tidyverse))
+    suppressMessages(require(Matrix))
+    res.intersect <- fread(output.intersect.res,drop=3,col.names = c('feature.name','tag.name'),stringsAsFactors = T)
+    res.intersect<-res.intersect[,.N,by=.(feature.name,tag.name)]
+    m <- with(res.intersect, sparseMatrix(i = as.numeric(tag.name), j = as.numeric(feature.name),
                                       x = N, dimnames = list( levels(tag.name),levels(feature.name))))
+    t <- writeMM(m,output.feature.sp)
+}else{sprintf('Sparse matrix already exists. Done')}
+sprintf('Finished')
 
 ## DONE
