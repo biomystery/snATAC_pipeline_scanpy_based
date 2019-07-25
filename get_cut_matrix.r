@@ -37,8 +37,8 @@ do.skip.step <- function(input_files, output_files) {
     if (!isInputExists)
         stop(paste("One or more of ", paste(input_files, collapse = ","), " does not exist"))
     if (!isOuputExists)
-        return(T)
-    else if(isInputNewer){ return(T)
+        return(F)
+    else if(isInputNewer){ return(F)
     }else{
         return(T)
     }
@@ -76,7 +76,7 @@ if(!do.skip.step(input_files=region.file,output_files=output.uniq.region)){
      system.time(system(cmd))}else{sprintf("Skipped bedIntersecting")}
 
 if(!do.skip.step(input_files=output.intersect.res,output_files=output.feature.sp)){
-    sprintf('convert to sparse count matrix')
+    sprintf('converting to sparse count matrix...')
     suppressMessages(require(data.table))
     suppressMessages(require(tidyverse))
     suppressMessages(require(Matrix))
