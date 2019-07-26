@@ -52,7 +52,8 @@ prefix<-sub('.bed$','',basename(region.file))
 output.uniq.region <- file.path(output.dir,paste0(prefix,'.uniq.bed'))
 output.intersect.res <- file.path(output.dir,paste0(prefix,'.intersect.tsv'))
 output.feature.sp <-file.path(output.dir,paste0(prefix,'.intersect.mtx'))
-
+output.feature.sp.x <-file.path(output.dir,paste0(prefix,'.intersect.regions'))
+output.feature.sp.y <-file.path(output.dir,paste0(prefix,'.intersect.cells'))
 ## make unqiue regions/features
 
 if(!do.skip.step(input_files=region.file,output_files=output.uniq.region)){
@@ -75,17 +76,19 @@ if(!do.skip.step(input_files=region.file,output_files=output.uniq.region)){
     print(cmd)
      system.time(system(cmd))}else{sprintf("Skipped bedIntersecting")}
 
-if(!do.skip.step(input_files=output.intersect.res,output_files=output.feature.sp)){
+if(!do.skip.step(input_files=output.intersect.res,output_files=c(output.feature.sp,
+                                                                 output.feature.sp.x,
+                                                                 output.feature.sp.y))){
     sprintf('converting to sparse count matrix...')
     suppressMessages(require(data.table))
     suppressMessages(require(tidyverse))
     suppressMessages(require(Matrix))
     res.intersect <- fread(output.intersect.res,drop=3,col.names = c('feature.name','tag.name'),stringsAsFactors = T)
     res.intersect<-res.intersect[,.N,by=.(feature.name,tag.name)]
-    m <- with(res.intersect, sparseMatrix(i = as.numeric(tag.name), j = as.numeric(feature.name),
-                                      x = N, dimnames = list( levels(tag.name),levels(feature.name))))
+    m <- with(res.intersect, sparseMatrix(i = as.numeric(feature.name),j = as.numeric(tag.name),
+                                      x = N, dimnames = list( levels(feature.name),levels(tag.name))))
     t <- writeMM(m,output.feature.sp)
+    write.table(data.frame(rownames(m)),file=output.feature.sp.x, col.names=FALSE, row.names=FALSE, quote=FALSE)
+    write.table(data.frame(colnames(m)),file=output.feature.sp.y, col.names=FALSE, row.names=FALSE, quote=FALSE)
 }else{sprintf('Sparse matrix already exists. Done')}
 sprintf('Finished')
-
-## DONE
