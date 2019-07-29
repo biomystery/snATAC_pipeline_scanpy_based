@@ -195,9 +195,9 @@ def plot_MarkerGenes(adata_input, clustering, marker_genes=None, check_all=False
 
 
 def binarize_AnnData(adata):
-    ```
+    '''
     binarize adata with log1p raw
-    ```
+    '''
 
     from scipy.sparse import find, csr_matrix
     adata_binary = adata.copy()
