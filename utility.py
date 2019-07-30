@@ -207,3 +207,35 @@ def binarize_AnnData(adata):
         shape=adata_binary.raw.X.shape)
     adata_binary.raw = AnnData(b, var=adata.raw.var, obs=adata.obs)
     return(adata_binary)
+
+
+def run_scrublet(adata, neotic_ratio=.5):
+    '''
+    '''
+    import scrublet as scr
+    from scipy.stats import rankdata
+
+    expected_doublet_th = adata.shape[0] / 1000 * .01 * neotic_ratio
+    adata_raw = adata.raw.copy()
+    adata_raw = adata_raw[:, adata_raw.var.index.isin(
+        adata.var_names.tolist())]
+    counts_matris_2 = adata_raw.X.expm1()
+    del adata_raw
+    scrub = scr.Scrublet(
+        counts_matris_2, expected_doublet_rate=expected_doublet_th)
+    doublet_scores, predicted_doublets = scrub.scrub_doublets(
+        distance_metric='cosine',
+        mean_center=False,
+        n_prin_comps=50,
+        log_transform=True,
+        min_gene_variability_pctl=0)
+    scrub.plot_histogram()
+    predicted_doublets = scrub.call_doublets(threshold=np.quantile(
+        doublet_scores, 1 - expected_doublet_th))  # directly call by trheshold
+    print(sum(predicted_doublets))
+    print(sum(predicted_doublets) / len(predicted_doublets))
+    adata.obs['doublet_score'] = doublet_scores
+    adata.obs['doublet'] = predicted_doublets
+    adata.obs['doublet_quantile'] = (
+        rankdata(doublet_scores) / len(doublet_scores))
+    return(adata)
