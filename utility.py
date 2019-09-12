@@ -24,7 +24,7 @@ sns.set(font_scale=1.5)
 plt.style.use('seaborn-white')
 
 
-def plot_QCmatrix(adata_input, clustering):
+def plot_QCmatrix(adata_input, clustering='leiden'):
     fig, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
     i = 0
     to_plot = [
@@ -60,7 +60,7 @@ def plot_QCmatrix(adata_input, clustering):
     plt.show()
 
 
-def plot_composation(adata_input, clustering):
+def plot_composation(adata_input, clustering='leiden'):
     fig, axs = plt.subplots(2, 2, figsize=(12, 8))
 
     # 1
@@ -106,7 +106,7 @@ def plot_composation(adata_input, clustering):
     plt.show()
 
 
-def plot_scatter(adata_input, clustering):
+def plot_scatter(adata_input, clustering='leiden'):
 
     n_cluster = len(adata_input.obs[clustering].unique())
     n_row = math.ceil(n_cluster / 5)
@@ -142,7 +142,7 @@ def plot_scatter(adata_input, clustering):
     plt.show()
 
 
-def plot_MarkerGenes(adata_input, clustering, marker_genes=None, check_all=False):
+def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_all=False):
     sns.set(font_scale=1)
     plt.style.use('default')
 
@@ -232,8 +232,9 @@ def run_scrublet(adata, neotic_ratio=.5):
     scrub.plot_histogram()
     predicted_doublets = scrub.call_doublets(threshold=np.quantile(
         doublet_scores, 1 - expected_doublet_th))  # directly call by trheshold
-    print(sum(predicted_doublets))
-    print(sum(predicted_doublets) / len(predicted_doublets))
+    print('total predicted doublets:', sum(predicted_doublets))
+    print('predicted doublets ratio:', sum(
+        predicted_doublets) / len(predicted_doublets))
     adata.obs['doublet_score'] = doublet_scores
     adata.obs['doublet'] = predicted_doublets
     adata.obs['doublet_quantile'] = (
