@@ -76,8 +76,8 @@ def qc_metrics(args):
     md_bam = args.output_prefix + '.filt.md.bam'
     rmdup_bam = args.output_prefix + '.filt.nodup.bam'
     tagalign_file = args.output_prefix + '.filt.nodup.tn5.tagAlign.gz'
-
-    if os.path.isfile(rmdup_bam):
+    
+    if os.path.isfile(rmdup_bam) and not os.path.isfile(tagalign_file):
         with gzip.open(tagalign_file, 'wt') as f:
             bamfile = pysam.AlignmentFile(rmdup_bam, 'rb')
             genome_size = {item['SN']: item['LN']
@@ -98,7 +98,7 @@ def qc_metrics(args):
                     args.name, barcode), str(read_qual), read_orient])
                 print(line_out, sep='\t', file=f)
             bamfile.close()
-    else:
+    elif not os.path.isfile(rmdup_bam):
         raise FileNotFoundError('{} not found!'.format(rmdup_bam))
 
     qc_metrics = {}
@@ -132,7 +132,7 @@ def qc_metrics(args):
 
     # peak related QCs ~ N
     peak_file = args.output_prefix + '_peaks.narrowPeak'
-    if os.path.isfile(args.peak_file):
+    if args.peak_file!=None and os.path.isfile(args.peak_file):
         zcat_proc = subprocess.Popen(
             ['zcat', args.peak_file], stdout=subprocess.PIPE)
         sortBed_proc = subprocess.Popen(
