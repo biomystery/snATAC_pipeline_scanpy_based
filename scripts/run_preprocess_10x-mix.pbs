@@ -49,7 +49,6 @@ time snATAC_pipeline_10X.py -o $output_dir  -b $tmp_bam -n ${sample} --shift -75
      -m 1 \
      --promoter-file $prom 1> $log 2>&1
 
-TACTTTCATCGACCGC
 ############################################################
 # transfer 
 ############################################################

@@ -29,18 +29,26 @@ input_bam="/home/zhc268/data/outputs/10xATAC/${sample}/outs/possorted_bam.bam"
 prom="/projects/ps-epigen/GENOME/${genome}/gencode.vM17.protein_coding.gene.prom.2kb.bed"
 log="${output_dir}/preprocess_log.txt"
 threads=$PBS_NP
-npeak_file=$(find /home/zhc268/data/outputs/peaks/${sample}/ -name "*filt*narrow*.gz")
+if [ -d /home/zhc268/data/outputs/peaks/${sample}/ ]
+then
+    npeak_file=$(find /home/zhc268/data/outputs/peaks/${sample}/ -name "*filt*narrow*.gz")
+else
+    npeak_file=""
+fi
+
+[[ ! -z $npeak_file ]]  && peak_args="--peak-file $npeak_file"
+[[ -z $npeak_file ]]  && peak_args=""
+
 ### 1 poreprocess
 # --skip-convert
-echo -e "time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
+cmd="time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
      --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
-     --peak-file $npeak_file  -m 1 \
+     $peak_args  -m 1 \
      --promoter-file $prom 1> $log 2>&1"
 
-time snATAC_pipeline_10X.py -o $output_dir  -b $input_bam -n ${sample} --shift -75 --extsize 150 \
-     --chrom-sizes $chromsize --blacklist-file $blacklist -t $threads \
-     --peak-file $npeak_file  -m 1 \
-     --promoter-file $prom 1> $log 2>&1
+echo -e $cmd
+
+time eval $cmd
 
 
 ############################################################
