@@ -15,6 +15,8 @@ import scipy.sparse
 import sklearn.metrics
 import sklearn.mixture
 import sklearn.linear_model
+import subprocess
+
 from anndata import AnnData
 sc.settings.set_figure_params(dpi=100)
 # verbosity: errors (0), warnings (1), info (2), hints (3)
