@@ -2,16 +2,25 @@
 #PBS -q condo
 #PBS -N snATAC_merge
 #PBS -l nodes=1:ppn=24
+#PBS -l mem=96gb
 #PBS -l walltime=4:00:00
 #PBS -V
 #PBS -m abe
 #PBS -A epigen-group
 
+## -v output=(output_name),samplefile
 source activate scanpy
 export PATH=/projects/ps-epigen/software/snATAC_josh/:$PATH;
-cd /home/zhc268/scratch/outputs_snATACj/
-#python3 Run_merge.py -s XH_204_1_2 XH_205_1_2  -n Veh1 Veh2   -o ./immune_rep2_veh
-#python3 Run_merge.py -s XH_204_1_2 XH_205_1_2 XH_206_1_2 XH_207_1_2 XH_208_1_2  -n Veh1 Veh2 OTX PDL1 OP -o ./immune_rep2 --no_correct_batch
-#python3 Run_merge.py -s JYH_854_1_2 JYH_855_1_2 JYH_856_1_2 JYH_857_1_2 -n Veh OTX PDL1 OP -o ./immune_rep1 --no_correct_batch
-#python3 Run_merge.py -s JYH_854_1_2 JYH_855_1_2 JYH_856_1_2 JYH_857_1_2 XH_204_1_2 XH_205_1_2 XH_206_1_2 XH_207_1_2 XH_208_1_2 -n Veh_r1 OTX_r1 PDL1_r1 OP_r1 Veh1_r2 Veh2_r2 OTX_r2 PDL1_r2 OP_r2 -o ./immune_rep_1_2 --correct_batch_by_rep
-python3 Run_merge.py -s JYH_854_1_2 JYH_855_1_2 JYH_856_1_2 JYH_857_1_2 XH_204_1_2 XH_205_1_2 XH_206_1_2 XH_207_1_2 XH_208_1_2 -n Veh_r1 OTX_r1 PDL1_r1 OP_r1 Veh1_r2 Veh2_r2 OTX_r2 PDL1_r2 OP_r2 -o ./immune_rep_1_2 -r 1.7
+#cd /home/zhc268/scratch/outputs_snATACj/
+cd /home/zhc268/data/outputs/snATACj/
+mkdir -p $output
+
+sampleIDs=($(awk '{print $1}' $samplefile))
+sampleNames=($(awk '{print $2}' $samplefile))
+
+cmd="python3 Run_merge.py -s ${sampleIDs[@]}  -n ${sampleNames[@]} -o $output -r 1"
+echo $cmd
+echo $cmd|bash 
+
+
+

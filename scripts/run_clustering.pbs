@@ -9,7 +9,7 @@
 
 source activate scanpy
 export PATH=/projects/ps-epigen/software/snATAC_josh/:$PATH;
-cd /home/zhc268/scratch/outputs_snATACj/
+cd /home/zhc268/data/outputs/snATACj/
 
 # -v sample
 
