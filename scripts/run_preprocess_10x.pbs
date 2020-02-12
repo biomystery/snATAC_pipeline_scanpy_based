@@ -50,6 +50,12 @@ echo -e $cmd
 
 time eval $cmd
 
+### add 10x multiplex script
+
+python ~/github/evans/src/clean_barcode_multiplets_1.1.py --input_path $(dirname $input_bam) \
+       --output_path $(dirname $input_bam) \
+       --prefiex ${sample}_ \
+       1> "$(dirname $input_bam)"/multiplets_rm_log.txt 2>&1
 
 ############################################################
 # transfer 
