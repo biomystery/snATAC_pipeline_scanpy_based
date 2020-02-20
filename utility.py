@@ -101,8 +101,8 @@ def plot_composation(adata_input, clustering='leiden'):
     )
     pd.plot(kind='bar', stacked=True, legend=False, ax=axs[1, 1])
     axs[1, 1].set_ylabel('Percentage')
-    #patches, labels = axs[1,1].get_legend_handles_labels()
-    #axs[1,1].legend(patches, labels, loc='upper left', bbox_to_anchor=(1,1))
+    # patches, labels = axs[1,1].get_legend_handles_labels()
+    # axs[1,1].legend(patches, labels, loc='upper left', bbox_to_anchor=(1,1))
 
     plt.tight_layout()
     plt.show()
@@ -144,7 +144,7 @@ def plot_scatter(adata_input, clustering='leiden'):
     plt.show()
 
 
-def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_all=False):
+def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_all=False, use_raw_=True):
     sns.set(font_scale=1)
     plt.style.use('default')
 
@@ -178,7 +178,7 @@ def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_
                           cmap='Reds',
                           dendrogram=True,
                           groupby=clustering,
-                          use_raw=True)
+                          use_raw=use_raw_)
 
     ax = sc.pl.matrixplot(adata_input,
                           var_names=marker_genes,
@@ -186,13 +186,13 @@ def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_
                           dendrogram=True,
                           groupby=clustering,
                           standard_scale='var',
-                          use_raw=True)
+                          use_raw=use_raw_)
 
     ax = sc.pl.dotplot(adata_input,
                        var_names=marker_genes,
                        groupby=clustering,
                        dendrogram=True,
-                       use_raw=True,
+                       use_raw=use_raw_,
                        expression_cutoff=0)
 
 
