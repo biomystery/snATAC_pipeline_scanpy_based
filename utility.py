@@ -16,14 +16,20 @@ import sklearn.metrics
 import sklearn.mixture
 import sklearn.linear_model
 import subprocess
-
+from jupyterthemes import jtplot
 from anndata import AnnData
+
 sc.settings.set_figure_params(dpi=100)
 # verbosity: errors (0), warnings (1), info (2), hints (3)
 sc.settings.verbosity = 3
 # %load_ext rpy2.ipython
+
 sns.set(font_scale=1.5)
 plt.style.use('seaborn-white')
+
+from jupyterthemes import jtplot
+jtplot.style(theme='grade3', context='notebook',
+             ticks=True, grid=False, figsize=(6, 4.5))
 
 
 def plot_QCmatrix(adata_input, clustering='leiden'):
