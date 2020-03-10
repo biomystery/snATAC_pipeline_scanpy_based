@@ -18,6 +18,8 @@ import sklearn.linear_model
 import subprocess
 from jupyterthemes import jtplot
 from anndata import AnnData
+from jupyterthemes import jtplot
+jtplot.style(theme='grade3', context='notebook', ticks=True, grid=False)
 
 sc.settings.set_figure_params(dpi=100)
 # verbosity: errors (0), warnings (1), info (2), hints (3)
@@ -27,13 +29,9 @@ sc.settings.verbosity = 3
 sns.set(font_scale=1.5)
 plt.style.use('seaborn-white')
 
-from jupyterthemes import jtplot
-jtplot.style(theme='grade3', context='notebook',
-             ticks=True, grid=False, figsize=(6, 4.5))
-
 
 def plot_QCmatrix(adata_input, clustering='leiden'):
-    fig, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
+    fig1, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
     i = 0
     to_plot = [
         'log10_unique_usable_reads', 'frac_reads_in_peaks',
@@ -51,14 +49,13 @@ def plot_QCmatrix(adata_input, clustering='leiden'):
     plt.tight_layout()
     plt.show()
 
-    fig, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
+    fig2, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
     i = 0
 
     for ax in axs.reshape(-1):
         sc.pl.umap(adata_input,
                    color=to_plot[i],
                    cmap='coolwarm',
-                   size=9,
                    ax=ax,
                    show=False,
                    legend_loc='on data')
@@ -66,6 +63,7 @@ def plot_QCmatrix(adata_input, clustering='leiden'):
 
     plt.tight_layout()
     plt.show()
+    return fig1, fig2
 
 
 def plot_composation(adata_input, clustering='leiden'):
@@ -74,7 +72,6 @@ def plot_composation(adata_input, clustering='leiden'):
     # 1
     sc.pl.umap(adata_input,
                color=clustering,
-               size=9,
                legend_loc='on data',
                ax=axs[0, 0],
                show=False)
@@ -112,6 +109,7 @@ def plot_composation(adata_input, clustering='leiden'):
 
     plt.tight_layout()
     plt.show()
+    return fig
 
 
 def plot_scatter(adata_input, clustering='leiden'):
@@ -148,6 +146,7 @@ def plot_scatter(adata_input, clustering='leiden'):
     plt.xlabel('log10_unique_usable_reads')
     plt.tight_layout()
     plt.show()
+    return fig
 
 
 def plot_MarkerGenes(adata_input, clustering='leiden', marker_genes=None, check_all=False, use_raw_=True):
