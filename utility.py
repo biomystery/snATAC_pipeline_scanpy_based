@@ -30,6 +30,9 @@ sns.set(font_scale=1.5)
 plt.style.use('seaborn-white')
 
 
+def flatten(l): return [item for sublist in l for item in sublist]
+
+
 def plot_QCmatrix(adata_input, clustering='leiden'):
     fig1, axs = plt.subplots(2, 3, figsize=(12, 6), sharex=True)
     i = 0
@@ -112,6 +115,34 @@ def plot_composation(adata_input, clustering='leiden'):
     return fig
 
 
+def plot_composation_scatter(adata, sample_names):
+    import math
+    n_sample = len(sample_names)
+    n_col = math.ceil(n_sample / 2)
+
+    fig, axs = plt.subplots(2,
+                            n_col,
+                            figsize=(3 * n_col, 6),
+                            sharex=True,
+                            sharey=True)
+    i = 0
+    for ax in axs.reshape(-1):
+        if i < n_sample:
+            sc.pl.umap(
+                adata[adata.obs['sample_name']
+                      == sample_names[i]],
+                color=['sample_name'],
+                ax=ax,
+                show=False,
+                title="{0}:{1} cells".format(
+                    sample_names[i],
+                    sum(adata.obs['sample_name'] == sample_names[i])),
+            ).get_legend().remove()
+        i += 1
+    plt.tight_layout()
+    plt.show()
+
+
 def plot_scatter(adata_input, clustering='leiden'):
 
     n_cluster = len(adata_input.obs[clustering].unique())
@@ -119,13 +150,13 @@ def plot_scatter(adata_input, clustering='leiden'):
     fig, axs = plt.subplots(n_row, 5, figsize=(
         10, 2 * n_row), sharex=True, sharey=True)
     j = 0
+    all_clusters = np.unique(adata_input.obs[clustering])
 
     for ax in axs.reshape(-1):
         if j >= n_cluster:
             break
-        cols = ['red' if i == str(
-            j) else 'grey' for i in adata_input.obs[clustering].tolist()]
-
+        cols = ['red' if i == all_clusters[j]
+                else 'grey' for i in adata_input.obs[clustering].tolist()]
         adata_input.obs.plot.scatter(x='log10_unique_usable_reads',
                                      y='frac_reads_in_promoters',
                                      s=3,
@@ -133,7 +164,7 @@ def plot_scatter(adata_input, clustering='leiden'):
                                      ax=ax)
         ax.set_xlabel('')
         ax.set_ylabel('')
-        ax.set_title("c{0}:{1} cells".format(str(j), str(
+        ax.set_title("c{0}:{1} cells".format(all_clusters[j], str(
             cols.count('red'))), fontdict={'fontsize': 12})
         j += 1
 
